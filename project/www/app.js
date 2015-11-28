@@ -181,39 +181,72 @@ function mapinitialize() {
 -----------------*/
 function plotpoint() {
 
-    //緯度、経度、拠点名、高評価数、低評価数、累計攻略数、経験値、ステータス（0:通常、1:除雪対象、2:除雪中）
+    //[緯度,経度]、名前、憩い度、来訪者、設備数、特徴数、コメント、URL
     var arrayTable = [
-            [37.49373, 139.91981, "スーパー川崎の休憩所", 27, 2, 2, 0],
-            [37.50173, 139.92481, "松島公園", 59, 4, 3,1],
-            [37.48273, 139.93181, "金次郎像前休憩スペース", 9, 4, 2,1],
-            [37.49973, 139.93981, "会津大学食堂", 12, 1, 1, 1],
-            [37.49723, 139.93081, "土管が３つある空き地",  30, 1, 3, 2]
+            ["37.49373,139.91981", "スーパー川崎の休憩所", 4,40, [2,4], [1,2], "cm","url"],
+            ["37.50173,139.92481", "松島公園", 4,59, [1,4], [1,3], "cm","url"],
+            ["37.48273,139.93181", "金次郎像前休憩スペース", 1,9, [2,4], [2,4],"cm","url"],
+            ["37.49973,139.93981", "会津大学食堂",2,12, [1,3], [1,2], "cm","url"],
+            ["37.49723,139.93081", "土管が３つある空き地", 3, 31, [1,4], [3,5], "cm","url"]
         ];
 
-
-    var i = 0;
-    var limit = 5;
+    var limit = 6;
     var content = "";
+    var status;
 
-    while (i < limit) {
+    for(var i=0;i<limit;i++){
+        var latlng = arrayTable[i][0].split(',');
+        var myLatlng = new google.maps.LatLng(latlng[0], latlng[1]);
 
-        var myLatlng = new google.maps.LatLng(arrayTable[i][0], arrayTable[i][1]);
-
-        switch (arrayTable[i][6]) {
-        case 0:
-            content = '<h4>' + arrayTable[i][2] + '</h4><p>憩い度：' + '<img width="32" height="32" src="./images/star.png"><img width="32" height="32" src="./images/star.png"><img width="32" height="32" src="./images/star.png">" <br/>' + '訪問者数：' + arrayTable[i][3] + '人<br/>' + '設備：' + '<img width="32" height="32" src="./images/drink.png"><br/>' + '特徴：[広] [洒]<br/>' + 'Comment + <br/></p>';
-            break;
-        case 1:
-            content = '<h4>' + arrayTable[i][2] + '</h4><p>憩い度：' + '<img width="32" height="32" src="./images/star.png"><br/>' + '訪問者数：' + arrayTable[i][3] + '人<br/>' + '設備：' + '<img width="32" height="32" src="./images/hamburger.png"><br/>' + '特徴：[静] [広]<br/>' + 'Comment：<br/> ~~~~~~ <br/></p>';
-            break;
-        case 2:
-            content = '<h4>' + arrayTable[i][2] + '</h4><p>憩い度：' + '<img width="32" height="32" src="./images/star.png"><br/>' + '訪問者数：' + arrayTable[i][3] + '人<br/>' + '設備：' + '<img width="32" height="32" src="./images/hamburger.png"><br/>' + '特徴：[静] [広]<br/>' + 'Comment：<br/> ~~~~~~ <br/></p>';
-            break;
+        if(arrayTable[i][3]>30){ //来訪者が30人以上のとき
+            content = '<h4>' + arrayTable[i][1] + '</h4>';
+            //星(憩い度)
+            content += '<p>憩い度：';
+            for(var j=arrayTable[i][2];j>=0;j--){
+                content += '<img width="32" height="32" src="./images/star.png">';
+            }
+            content += '<br/>';
+            content += '訪問者数：' + arrayTable[i][3] + '人<br/>' 
+            content += '設備：';
+            content += switchEquipment(arrayTable[i][4]);
+            content += '<br/>' + '特徴：[静] [広]<br/>' + 'Comment：<br/> ~~~~~~ <br/></p>';
+            status = 0;
+        }else{
+            content = '<h4>' + arrayTable[i][1] + '</h4>';
+            //星(憩い度)
+            content += '<p>憩い度：';
+            for(var j=arrayTable[i][2];j>=0;j--){
+                content += '<img width="32" height="32" src="./images/star.png">';
+            }
+            content += '<br/>';
+            content += '訪問者数：' + arrayTable[i][3] + '人<br/>' 
+            content += '設備：';
+            content += switchEquipment(arrayTable[i][4]);
+            content += '<br/>' + '特徴：[静] [広]<br/>' + 'Comment：<br/> ~~~~~~ <br/></p>';
+            status = 1;
         }
+        createMarker(myLatlng, content, mapMaster, status);
+    }
+}
 
-        createMarker(myLatlng, content, mapMaster, arrayTable[i][6]);
-
-        i = i + 1;
+function switchEquipment($arr){
+    for(var $key in $arr){
+        alert($key);
+        switch($key){
+            case 0:
+                content += '';
+            case 1:
+                content += '<img width="32" height="32" src="./images/hamburger.png">';
+            case 2:
+                content += '<img width="32" height="32" src="./images/drink.png">';
+            case 3:
+                content += '<img width="32" height="32" src="./images/sleep.png">';
+            case 4:
+                content += '<img width="32" height="32" src="./images/book.png">';
+            case 5:
+                content += '<img width="32" height="32" src="./images/pencil.png">';
+                
+        }
     }
 }
 
@@ -241,66 +274,52 @@ function createMarker(latlng, content, map, status) {
             animation: google.maps.Animation.BOUNCE //バウンド
         });
         break;
-    case 2:
-        icon_img = "./images/m_64.png";
-        marker = new google.maps.Marker({
-            position: latlng,
-            map: map,
-            icon: icon_img,
-            animation: google.maps.Animation.BOUNCE //バウンド
-        });
-        break;
     }
 
+    
+    /* ポップアップウィンドウ*/
     var infoWindow = new google.maps.InfoWindow();
-
-
     google.maps.event.addListener(marker, 'click', function () {
-
         //先に開いた情報ウィンドウがあれば、closeする
         if (currentInfoWindow) {
             currentInfoWindow.close();
         }
-
         //情報ウィンドウを開く
         infoWindow.setContent(content);
         infoWindow.open(map, marker);
-
         //開いた情報ウィンドウを記録しておく
         currentInfoWindow = infoWindow;
-
     });
-
 }
-
-function plotself() {
-    navigator.geolocation.watchPosition(
-        function (position) {
-
-            var myLatlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-            var marker = new google.maps.Marker({
-                position: myLatlng,
-                map: mapMaster,
-                icon: "./images/user.png"
-            });
-            var infoWindow = new google.maps.InfoWindow();
-
-            google.maps.event.addListener(marker, 'click', function () {
-
-                //先に開いた情報ウィンドウがあれば、closeする
-                if (currentInfoWindow) {
-                    currentInfoWindow.close();
-                }
-
-                //情報ウィンドウを開く
-                infoWindow.setContent('<h4>さくらい♡</h4>');
-                infoWindow.open(mapMaster, marker);
-
-                //開いた情報ウィンドウを記録しておく
-                currentInfoWindow = infoWindow;
-
-            });
-
-        }
-    );
-}
+//=====ユーザ情報========
+//function plotself() {
+//    navigator.geolocation.watchPosition(
+//        function (position) {
+//
+//            var myLatlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+//            var marker = new google.maps.Marker({
+//                position: myLatlng,
+//                map: mapMaster,
+//                icon: "./images/user.png"
+//            });
+//            var infoWindow = new google.maps.InfoWindow();
+//
+//            google.maps.event.addListener(marker, 'click', function () {
+//
+//                //先に開いた情報ウィンドウがあれば、closeする
+//                if (currentInfoWindow) {
+//                    currentInfoWindow.close();
+//                }
+//
+//                //情報ウィンドウを開く
+//                infoWindow.setContent('<h4>さくらい♡</h4>');
+//                infoWindow.open(mapMaster, marker);
+//
+//                //開いた情報ウィンドウを記録しておく
+//                currentInfoWindow = infoWindow;
+//
+//            });
+//
+//        }
+//    );
+//}

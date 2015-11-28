@@ -5,7 +5,7 @@
         <ons-list-item
             modifier="tappable" class="list__item__line-height"
             onclick="app.slidingMenu.setMainPage('page1.html', {closeMenu: true})">
-            <i class="fa fa-map fa-lg" style="color: #666"></i>
+            <i class="fa fa-home fa-lg" style="color: #666"></i>
             &nbsp; Map
         </ons-list-item>
 
@@ -18,7 +18,7 @@
         
         <ons-list-item
             modifier="tappable" class="list__item__line-height"
-            onclick="app.slidingMenu.setMainPage('friends.html', {closeMenu: true})">
+            onclick="app.slidingMenu.setMainPage('<friends></friends>.html', {closeMenu: true})">
             <i class="fa fa-users fa-lg" style="color: #666"></i>
             &nbsp; Friends
         </ons-list-item>
@@ -27,18 +27,9 @@
             modifier="tappable" class="list__item__line-height"
             onclick="app.slidingMenu.setMainPage('page4.html', {closeMenu: true})">
             <i class="fa fa-comment fa-lg" style="color: #666"></i>
-            &nbsp; 報告
+            &nbsp; Report
         </ons-list-item>
         
-<!--
-        <ons-list-item
-            modifier="tappable" class="list__item__line-height"
-            onclick="app.slidingMenu.setMainPage('page5.html', {closeMenu: true})">
-            <i class="fa fa-flag fa-lg" style="color: #666"></i>
-            &nbsp; 感想
-        </ons-list-item>
--->
-
     </ons-list>
 
 </ons-page>
